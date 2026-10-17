@@ -11,6 +11,7 @@ import { AppService } from '@app/app.service';
 import { PropertyInquiryModule } from '@modules/property-inquiry/property-inquiry.module';
 import { SharedCacheModule } from '@shared/cache/cache.module';
 import { UploadModule } from '@shared/upload/upload.module';
+import { PropertyModule } from '@modules/property/property.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -39,6 +40,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'thaivista-api',
     }),
     PropertyInquiryModule,
+    PropertyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

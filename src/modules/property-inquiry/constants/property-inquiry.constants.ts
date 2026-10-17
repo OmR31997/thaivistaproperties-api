@@ -55,3 +55,7 @@ export const PROPERTY_INQUIRY_STATUSES = [
   "closed",
   "spam",
 ] as const;
+
+export type PropertyIntent = (typeof PROPERTY_INQUIRY_INTENT)[number];
+export type PropertyType = (typeof PROPERTY_TYPES)[number];
+export type BedroomOption = (typeof BEDROOM_OPTIONS)[number];

@@ -45,7 +45,7 @@ export class PropertyInquiryContact {
 export const PropertyInquiryContactSchema =
   SchemaFactory.createForClass(PropertyInquiryContact);
 
-@Schema({ timestamps: true, versionKey: false })
+@Schema({ timestamps: true, versionKey: false, collection: 'property-inquiries' })
 export class PropertyInquiry {
   @Prop({ type: String, enum: PROPERTY_INQUIRY_INTENT, required: true, index: true })
   intent!: (typeof PROPERTY_INQUIRY_INTENT)[number];
