@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, type UploadApiResponse } from 'cloudinary';
 import { CacheService } from '@shared/cache/cache.service';
 import { UploadEvent, UploadEvents } from '@shared/upload/upload.events';
+import { CacheTtl } from '@shared/cache/cache.ttl';
 import type {
   ListResourcesOptions,
   ListedResources,
@@ -10,6 +11,8 @@ import type {
   UploadInput,
   UploadStrategy,
   UploadedAsset,
+  StorageUsage,
+  StorageUsageMetric,
 } from '@shared/upload/upload.types';
 
 @Injectable()
@@ -136,10 +139,38 @@ export class CloudinaryStorageStrategy implements UploadStrategy {
     }
   }
 
+  async getUsage(): Promise<StorageUsage> {
+    const cacheKey = 'upload:cloudinary:usage';
+    const cached = await this.cacheService.get<StorageUsage>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      this.ensureConfigured();
+      const usage = (await cloudinary.api.usage()) as Record<string, unknown>;
+      const result: StorageUsage = {
+        provider: 'cloudinary',
+        storage: this.toUsageMetric(usage.storage, 'bytes'),
+        bandwidth: this.toUsageMetric(usage.bandwidth, 'bytes'),
+        requests: this.toUsageMetric(usage.requests, 'count'),
+        transformations: this.toUsageMetric(usage.transformations, 'count'),
+        plan: this.toString(usage.plan),
+        lastUpdated: this.toString(usage.last_updated),
+        resetAt: this.toString(usage.reset_at),
+      };
+      await this.cacheService.set(cacheKey, result, CacheTtl.Long);
+      return result;
+    } catch (error: unknown) {
+      throw this.errorResponse(error, 'getUsage');
+    }
+  }
+
   async rollBack(assets: UploadedAsset[]): Promise<void> {
     if (assets.length === 0) {
       return;
     }
+
     const payload = { assets, count: assets.length };
     this.uploadEvents.emit(UploadEvent.RollbackStarted, payload);
     try {
@@ -211,5 +242,59 @@ export class CloudinaryStorageStrategy implements UploadStrategy {
 
   private resourcePath(resource: UploadApiResponse): string {
     return `/${resource.resource_type}/upload/${resource.public_id}`;
+  }
+
+  private toUsageMetric(value: unknown, unit: 'bytes' | 'count'): StorageUsageMetric {
+    const metric = this.toRecord(value);
+    const used =
+      this.toNumber(metric.used) ??
+      this.toNumber(metric.usage) ??
+      this.toNumber(value) ??
+      0;
+    const limit = this.toNumber(metric.limit) ?? this.toNumber(metric.quota);
+    const remaining = limit === undefined ? undefined : Math.max(limit - used, 0);
+    return {
+      used,
+      usedFormatted: this.formatMetric(used, unit),
+      limit,
+      limitFormatted: limit === undefined ? undefined : this.formatMetric(limit, unit),
+      remaining,
+      remainingFormatted:
+        remaining === undefined ? undefined : this.formatMetric(remaining, unit),
+      usedPercentage: limit && limit > 0 ? Number(((used / limit) * 100).toFixed(2)) : undefined,
+    };
+  }
+
+  private toRecord(value: unknown): Record<string, unknown> {
+    return typeof value === 'object' && value !== null
+      ? (value as Record<string, unknown>)
+      : {};
+  }
+
+  private toNumber(value: unknown): number | undefined {
+    return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+  }
+
+  private toString(value: unknown): string | undefined {
+    return typeof value === 'string' ? value : undefined;
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    const units = ['KB', 'MB', 'GB', 'TB'];
+    let value = bytes;
+    let unitIndex = -1;
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex += 1;
+    }
+    const precision = value >= 100 ? 0 : value >= 10 ? 1 : 2;
+    return `${value.toFixed(precision)} ${units[unitIndex]}`;
+  }
+
+  private formatMetric(value: number, unit: 'bytes' | 'count'): string {
+    return unit === 'bytes' ? this.formatBytes(value) : value.toLocaleString('en-US');
   }
 }

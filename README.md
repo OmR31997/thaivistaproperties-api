@@ -71,6 +71,12 @@ relative path with `MEDIA_BASE_URL`; do not store that computed URL.
 The computed URL appends the asset format, while `relativePath` remains
 extensionless.
 
+Cloudinary account usage is available to authenticated users at
+`GET /api/uploads/storage/usage`. It reports raw and human-readable
+(`MB`/`GB`) used, limit, remaining, and percentage values for storage,
+bandwidth, requests, and transformations when the Cloudinary plan provides
+those limits.
+
 Application routes use the `/api` global prefix. Health checks are excluded
 from that prefix and are available at `/health`, `/health/live`, and
 `/health/ready`. Swagger is available at `/api/docs`.

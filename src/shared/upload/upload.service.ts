@@ -5,6 +5,7 @@ import type {
   ListedResources,
   UploadErrorResponse,
   UploadInput,
+  StorageUsage,
   UploadedAsset,
 } from '@shared/upload/upload.types';
 
@@ -44,6 +45,10 @@ export class UploadService {
 
   buildUrl(relativePath: string, format?: string): string {
     return this.strategy().buildUrl(relativePath, format);
+  }
+
+  getUsage(): Promise<StorageUsage> {
+    return this.strategy().getUsage();
   }
 
   private strategy() {

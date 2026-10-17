@@ -11,7 +11,7 @@ export class CacheService {
     return this.cache.get<T>(key);
   }
 
-  set<T>(key: string, value: T, ttl = CacheTtl.Default): Promise<T> {
+  set<T>(key: string, value: T, ttl: number = CacheTtl.Default): Promise<T> {
     return this.cache.set(key, value, ttl);
   }
 

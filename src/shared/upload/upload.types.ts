@@ -41,6 +41,27 @@ export interface ListedResources {
   meta: UploadPaginationMeta;
 }
 
+export interface StorageUsageMetric {
+  used: number;
+  usedFormatted: string;
+  limit?: number;
+  limitFormatted?: string;
+  remaining?: number;
+  remainingFormatted?: string;
+  usedPercentage?: number;
+}
+
+export interface StorageUsage {
+  provider: StorageProvider;
+  storage: StorageUsageMetric;
+  bandwidth: StorageUsageMetric;
+  requests: StorageUsageMetric;
+  transformations: StorageUsageMetric;
+  plan?: string;
+  lastUpdated?: string;
+  resetAt?: string;
+}
+
 export interface UploadErrorResponse {
   provider: StorageProvider;
   operation: string;
@@ -58,4 +79,5 @@ export interface UploadStrategy {
   rollBack(assets: UploadedAsset[]): Promise<void>;
   errorResponse(error: unknown, operation: string): UploadErrorResponse;
   buildUrl(relativePath: string, format?: string): string;
+  getUsage(): Promise<StorageUsage>;
 }

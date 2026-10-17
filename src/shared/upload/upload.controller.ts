@@ -118,6 +118,20 @@ export class UploadController {
     };
   }
 
+  @Get('storage/usage')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get Cloudinary storage and account usage' })
+  @ApiResponse({ status: 200, description: 'Cloudinary usage and remaining quota' })
+  async usage() {
+    const data = await this.uploadService.getUsage();
+    return {
+      success: true,
+      message: 'Storage usage fetched successfully',
+      data,
+    };
+  }
+
   @Delete()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
