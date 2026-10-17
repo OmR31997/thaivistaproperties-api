@@ -21,7 +21,6 @@ export interface UploadedAsset {
 export interface ListResourcesOptions {
   prefix?: string;
   maxResults?: number;
-  cursor?: string;
   page?: number;
 }
 
@@ -32,8 +31,6 @@ export interface UploadPaginationMeta {
   totalPages: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  nextCursor?: string;
-  currentCursor?: string;
 }
 
 export interface ListedResources {

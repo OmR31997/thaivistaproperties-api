@@ -7,11 +7,6 @@ export class UploadListQueryDto extends BaseQueryDto {
   @IsOptional()
   @IsString()
   prefix?: string;
-
-  @ApiPropertyOptional({ description: 'Cursor returned by the previous list request' })
-  @IsOptional()
-  @IsString()
-  cursor?: string;
 }
 
 export class DeleteUploadsDto {

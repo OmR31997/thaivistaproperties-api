@@ -99,7 +99,7 @@ export class CloudinaryStorageStrategy implements UploadStrategy {
   }
 
   async listResources(options: ListResourcesOptions = {}): Promise<ListedResources> {
-    const cacheKey = `upload:cloudinary:${options.prefix ?? 'all'}:${options.cursor ?? 'first'}:${options.maxResults ?? 100}`;
+    const cacheKey = `upload:cloudinary:${options.prefix ?? 'all'}:${options.maxResults ?? 100}`;
     const cached = await this.cacheService.get<ListedResources>(cacheKey);
     if (cached) {
       return cached;
@@ -111,7 +111,6 @@ export class CloudinaryStorageStrategy implements UploadStrategy {
         type: 'upload',
         prefix: this.resolvePrefix(options.prefix),
         max_results: options.maxResults ?? 100,
-        next_cursor: options.cursor,
       });
       const limit = options.maxResults ?? 100;
       const page = options.page ?? 1;
@@ -126,10 +125,8 @@ export class CloudinaryStorageStrategy implements UploadStrategy {
           limit,
           total,
           totalPages,
-          hasNextPage: Boolean(response.next_cursor),
-          hasPreviousPage: page > 1 || Boolean(options.cursor),
-          nextCursor: response.next_cursor,
-          currentCursor: options.cursor,
+          hasNextPage: false,
+          hasPreviousPage: page > 1,
         },
       };
       await this.cacheService.set(cacheKey, result);

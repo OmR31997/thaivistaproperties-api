@@ -108,7 +108,6 @@ export class UploadController {
       prefix: query.prefix,
       page: query.page,
       maxResults: query.limit,
-      cursor: query.cursor,
     });
     return {
       success: true,
