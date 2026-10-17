@@ -19,7 +19,7 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api', {
+  app.setGlobalPrefix('api/v1', {
     exclude: [
       { path: '', method: RequestMethod.GET },
       { path: 'health', method: RequestMethod.GET },
@@ -32,9 +32,20 @@ async function bootstrap() {
     .setTitle('Thaivista API')
     .setDescription('Thaivista API documentation')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter the JWT access token',
+        in: 'header',
+      },
+      'bearer',
+    )
     .build();
   SwaggerModule.setup(
-    'api/docs',
+    'docs',
     app,
     SwaggerModule.createDocument(app, swaggerConfig),
     { useGlobalPrefix: false },

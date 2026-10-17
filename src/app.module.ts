@@ -10,6 +10,7 @@ import { AppController } from '@app/app.controller';
 import { AppService } from '@app/app.service';
 import { PropertyInquiryModule } from '@modules/property-inquiry/property-inquiry.module';
 import { SharedCacheModule } from '@shared/cache/cache.module';
+import { UploadModule } from '@shared/upload/upload.module';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -21,6 +22,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       validate: validateEnvironment,
     }),
     SharedCacheModule,
+    UploadModule,
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

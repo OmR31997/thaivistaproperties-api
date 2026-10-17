@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
 
 class EnvironmentVariables {
   @IsNotEmpty()
@@ -25,6 +25,31 @@ class EnvironmentVariables {
   @IsOptional()
   @IsString()
   JWT_REFRESH_EXPIRES_IN?: string;
+
+  @IsOptional()
+  @IsIn(['cloudinary'])
+  STORAGE_PROVIDER?: 'cloudinary';
+
+  @IsOptional()
+  @IsString()
+  CLOUDINARY_ROOT_FOLDER?: string;
+
+  @IsOptional()
+  @IsString()
+  CLOUDINARY_CLOUD_NAME?: string;
+
+  @IsOptional()
+  @IsString()
+  CLOUDINARY_API_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  CLOUDINARY_API_SECRET?: string;
+
+  @IsOptional()
+  @IsString()
+  MEDIA_BASE_URL?: string;
+
 }
 
 export function validateEnvironment(config: Record<string, unknown>) {

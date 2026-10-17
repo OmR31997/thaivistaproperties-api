@@ -64,3 +64,6 @@ documents/
 
 # Database exports
 /cloud-source.json
+
+# Deferred storage provider
+/src/shared/upload/s3-storage.strategy.ts

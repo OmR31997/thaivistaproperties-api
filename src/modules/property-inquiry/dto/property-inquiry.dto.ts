@@ -3,19 +3,17 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsIn,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  Max,
   MaxLength,
-  Min,
   ValidateNested,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   ValidationArguments,
   registerDecorator,
 } from 'class-validator';
+import { BaseQueryDto } from '@common/dto/base-query.dto';
 import {
   BEDROOM_OPTIONS,
   INQUIRY_TIMELINES,
@@ -120,27 +118,7 @@ export class UpdatePropertyInquiryDto extends PartialType(CreatePropertyInquiryD
   status?: (typeof PROPERTY_INQUIRY_STATUSES)[number];
 }
 
-export class PropertyInquiryQueryDto {
-  @ApiPropertyOptional({ default: 1, minimum: 1 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page = 1;
-
-  @ApiPropertyOptional({ default: 10, minimum: 1, maximum: 100 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit = 10;
-
-  @ApiPropertyOptional({ description: 'Search name, email, phone, or message' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
+export class PropertyInquiryQueryDto extends BaseQueryDto {
   @ApiPropertyOptional({ enum: PROPERTY_INQUIRY_INTENT })
   @IsOptional()
   @IsIn(PROPERTY_INQUIRY_INTENT)

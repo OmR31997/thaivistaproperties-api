@@ -43,6 +43,34 @@ The application exposes a global `CacheService` from `src/shared/cache`.
 Use `CacheKeys` for namespaced keys and clear affected entries after updates
 or deletes. The default in-memory cache TTL is 60 seconds.
 
+## File storage
+
+Uploads use the global `UploadService` from `src/shared/upload` and send
+buffers directly to the configured provider. No files are written to the API
+server. Cloudinary is the default provider:
+
+```text
+STORAGE_PROVIDER=cloudinary
+CLOUDINARY_ROOT_FOLDER=thaivista/assets
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+MEDIA_BASE_URL=https://res.cloudinary.com/<cloud-name>
+```
+
+`UploadService` provides `uploadOne`, `uploadBulk`, `deleteOne`,
+`deleteBulk`, `listResources`, and `rollBack`. Bulk uploads roll back assets
+that were already uploaded when a later upload fails, which also supports
+cancel/not-save flows. Upload results contain a Cloudinary-relative
+`relativePath` (for example
+`/image/upload/thaivista/assets/album/photo`) rather than a full URL.
+The path includes the correct resource type, so raw files such as PDF, DOC,
+ZIP, and XLS files use `/raw/upload/...`. Store `relativePath` in the
+database. API responses also expose a computed `url` by wrapping the
+relative path with `MEDIA_BASE_URL`; do not store that computed URL.
+The computed URL appends the asset format, while `relativePath` remains
+extensionless.
+
 Application routes use the `/api` global prefix. Health checks are excluded
 from that prefix and are available at `/health`, `/health/live`, and
 `/health/ready`. Swagger is available at `/api/docs`.
