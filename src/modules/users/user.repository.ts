@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '@modules/users/schemas/user.schema';
+import type { UserRole } from '@modules/users/types/user.types';
 
 @Injectable()
 export class UserRepository {
   constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
 
-  async findByRole(role: string): Promise<UserDocument | null> {
+  async findByRole(role: UserRole): Promise<UserDocument | null> {
     return this.userModel.findOne({ role }).exec();
   }
 

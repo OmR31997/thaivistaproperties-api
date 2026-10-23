@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '@modules/auth/auth.service';
 import { LoginDto } from '@modules/auth/dto/login.dto';
+import { SignupDto } from '@modules/auth/dto/signup.dto';
 import { RefreshTokenDto } from '@modules/auth/dto/refresh-token.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from '@modules/auth/guards/jwt-auth.guard';
@@ -10,6 +11,14 @@ import type { AuthenticatedRequest } from '@modules/auth/guards/jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('signup')
+  @ApiOperation({ summary: 'Create a user account and return tokens' })
+  @ApiResponse({ status: 201, description: 'Account created successfully' })
+  @ApiResponse({ status: 409, description: 'Email or role is already registered' })
+  signup(@Body() dto: SignupDto) {
+    return this.authService.signup(dto);
+  }
 
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })

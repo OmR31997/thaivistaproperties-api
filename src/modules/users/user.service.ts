@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes, scryptSync } from 'node:crypto';
 import { UserRepository } from '@modules/users/user.repository';
+import { UserDocument } from '@modules/users/schemas/user.schema';
+import { SUPER_ADMIN_ROLE } from '@modules/users/types/user.types';
+import type { UserRole } from '@modules/users/types/user.types';
 
 @Injectable()
 export class UserService {
@@ -9,7 +12,7 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async ensureDefaultSuperAdmin(email: string, password: string): Promise<void> {
-    const existing = await this.userRepository.findByRole('Super Admin');
+    const existing = await this.userRepository.findByRole(SUPER_ADMIN_ROLE);
     if (existing) {
       this.logger.log('Super admin already exists; default admin creation skipped');
       return;
@@ -20,7 +23,7 @@ export class UserService {
         email,
         name: 'Super Admin',
         passwordHash: this.hashPassword(password),
-        role: 'Super Admin',
+        role: SUPER_ADMIN_ROLE,
       });
       this.logger.log('Default super admin created');
     } catch (error: unknown) {
@@ -30,6 +33,20 @@ export class UserService {
       }
       throw error;
     }
+  }
+
+  async createUser(
+    email: string,
+    name: string,
+    password: string,
+    role: UserRole,
+  ): Promise<UserDocument> {
+    return this.userRepository.create({
+      email: email.toLowerCase().trim(),
+      name: name.trim(),
+      passwordHash: this.hashPassword(password),
+      role,
+    });
   }
 
   private hashPassword(password: string): string {

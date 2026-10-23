@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, scryptSync, timingSafeEqual } from 'node:crypto';
@@ -7,11 +7,15 @@ import { RefreshTokenDto } from '@modules/auth/dto/refresh-token.dto';
 import { UserRepository } from '@modules/users/user.repository';
 import { UserDocument } from '@modules/users/schemas/user.schema';
 import { LoginDto } from '@modules/auth/dto/login.dto';
+import { SignupDto } from '@modules/auth/dto/signup.dto';
+import { UserService } from '@modules/users/user.service';
+import { SUPER_ADMIN_ROLE } from '@modules/users/types/user.types';
+import type { UserRole } from '@modules/users/types/user.types';
 
 interface TokenPayload {
   sub: string;
   publicId: string;
-  role: string;
+  role: UserRole;
   type: 'access' | 'refresh';
 }
 
@@ -19,9 +23,34 @@ interface TokenPayload {
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  async signup(dto: SignupDto) {
+    try {
+      const user = await this.userService.createUser(dto.email, dto.name, dto.password, dto.role);
+      const tokens = await this.issueTokens(user);
+      return {
+        success: true,
+        message: 'Signup successful',
+        data: {
+          ...tokens,
+          user: this.toPublicUser(user),
+        },
+      };
+    } catch (error: unknown) {
+      if (this.isDuplicateKeyError(error)) {
+        throw new ConflictException(
+          dto.role === SUPER_ADMIN_ROLE
+            ? 'A Super Admin already exists or the email is already registered'
+            : 'Email is already registered',
+        );
+      }
+      throw error;
+    }
+  }
 
   async login(dto: LoginDto) {
     const user = await this.userRepository.findByEmail(dto.email);
@@ -132,5 +161,14 @@ export class AuthService {
       role: user.role,
       status: user.status,
     };
+  }
+
+  private isDuplicateKeyError(error: unknown): boolean {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 11000
+    );
   }
 }

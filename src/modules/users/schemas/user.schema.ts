@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { generatePublicId } from '@common/utils/public-id';
+import { SUB_ADMIN_ROLE, SUPER_ADMIN_ROLE, USER_ROLES } from '@modules/users/types/user.types';
+import type { UserRole } from '@modules/users/types/user.types';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserStatus = 'ACTIVE' | 'INACTIVE';
@@ -24,10 +26,10 @@ export class User {
   @Prop({ required: true })
   passwordHash!: string;
 
-  @Prop({ default: 'Sub Admin' })
-  role!: string;
+  @Prop({ enum: USER_ROLES, default: SUB_ADMIN_ROLE })
+  role!: UserRole;
 
-  @Prop({ enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' })
+  @Prop({ enum: ['ACTIVE', 'INACTIVE'], default: 'INACTIVE' })
   status!: UserStatus;
 
   @Prop()
@@ -46,7 +48,7 @@ UserSchema.index(
   { role: 1 },
   {
     unique: true,
-    partialFilterExpression: { role: 'Super Admin' },
+    partialFilterExpression: { role: SUPER_ADMIN_ROLE },
     name: 'one_super_admin_only',
   },
 );

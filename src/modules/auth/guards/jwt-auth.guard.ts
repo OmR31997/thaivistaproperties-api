@@ -6,9 +6,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import type { UserRole } from '@modules/users/types/user.types';
 
 export interface AuthenticatedRequest extends Request {
-  user: { sub: string; publicId: string; role: string; type: 'access' | 'refresh' };
+  user: { sub: string; publicId: string; role: UserRole; type: 'access' | 'refresh' };
 }
 
 @Injectable()
