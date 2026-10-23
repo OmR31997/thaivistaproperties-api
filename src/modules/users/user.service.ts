@@ -49,7 +49,12 @@ export class UserService {
     });
   }
 
-  private hashPassword(password: string): string {
+  async updatePassword(userId: string | UserDocument['_id'], newPassword: string): Promise<void> {
+    const passwordHash = this.hashPassword(newPassword);
+    await this.userRepository.updatePasswordHash(userId, passwordHash);
+  }
+
+  hashPassword(password: string): string {
     const salt = randomBytes(16).toString('hex');
     const hash = scryptSync(password, salt, 64).toString('hex');
     return `${salt}:${hash}`;

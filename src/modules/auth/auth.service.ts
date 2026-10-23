@@ -1,9 +1,10 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, scryptSync, timingSafeEqual } from 'node:crypto';
 import type { SignOptions } from 'jsonwebtoken';
 import { RefreshTokenDto } from '@modules/auth/dto/refresh-token.dto';
+import { ChangePasswordDto } from '@modules/auth/dto/change-password.dto';
 import { UserRepository } from '@modules/users/user.repository';
 import { UserDocument } from '@modules/users/schemas/user.schema';
 import { LoginDto } from '@modules/auth/dto/login.dto';
@@ -106,6 +107,30 @@ export class AuthService {
     return {
       success: true,
       message: 'Logout successful',
+      data: null,
+    };
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    if (dto.currentPassword === dto.newPassword) {
+      throw new BadRequestException('New password cannot be the same as current password');
+    }
+
+    const user = await this.userRepository.findById(userId);
+    if (!user || user.status !== 'ACTIVE') {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    if (!this.verifyPassword(dto.currentPassword, user.passwordHash)) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    await this.userService.updatePassword(user._id, dto.newPassword);
+    await this.userRepository.clearRefreshTokenHash(userId);
+
+    return {
+      success: true,
+      message: 'Password changed successfully',
       data: null,
     };
   }

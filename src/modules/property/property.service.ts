@@ -27,6 +27,7 @@ export class PropertyService {
     if (query.propertyType) filter.propertyType = query.propertyType;
     if (query.bedrooms) filter.bedrooms = query.bedrooms;
     if (query.bathrooms) filter.bathrooms = query.bathrooms;
+    if (query.status) filter.status = query.status;
     if (query.search?.trim()) {
       const search = query.search.trim();
       filter.$or = [

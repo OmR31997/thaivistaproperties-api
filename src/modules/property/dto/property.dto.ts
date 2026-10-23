@@ -19,6 +19,7 @@ import {
 import {
   BATHROOM_OPTIONS,
   PROPERTY_INTENTS,
+  PROPERTY_STATUSES,
 } from '@modules/property/constants/property.constants';
 import { BaseQueryDto } from '@common/dto/base-query.dto';
 
@@ -79,6 +80,11 @@ export class CreatePropertyDto {
   @IsNotEmpty()
   price!: string;
 
+  @ApiPropertyOptional({ enum: PROPERTY_STATUSES, default: 'published' })
+  @IsOptional()
+  @IsIn(PROPERTY_STATUSES)
+  status?: (typeof PROPERTY_STATUSES)[number];
+
   @ApiPropertyOptional({ maxLength: 2000 })
   @IsOptional()
   @IsString()
@@ -114,6 +120,11 @@ export class PropertyQueryDto extends BaseQueryDto {
   @IsOptional()
   @IsIn(BATHROOM_OPTIONS)
   bathrooms?: (typeof BATHROOM_OPTIONS)[number];
+
+  @ApiPropertyOptional({ enum: PROPERTY_STATUSES })
+  @IsOptional()
+  @IsIn(PROPERTY_STATUSES)
+  status?: (typeof PROPERTY_STATUSES)[number];
 }
 
 export class PropertyPaginationMetaDto {

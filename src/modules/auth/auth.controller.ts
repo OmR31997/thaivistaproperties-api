@@ -4,6 +4,7 @@ import { AuthService } from '@modules/auth/auth.service';
 import { LoginDto } from '@modules/auth/dto/login.dto';
 import { SignupDto } from '@modules/auth/dto/signup.dto';
 import { RefreshTokenDto } from '@modules/auth/dto/refresh-token.dto';
+import { ChangePasswordDto } from '@modules/auth/dto/change-password.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from '@modules/auth/guards/jwt-auth.guard';
 
@@ -41,5 +42,19 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Logout acknowledged' })
   logout(@Req() request: AuthenticatedRequest) {
     return this.authService.logout(request.user.sub);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Change current user password' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid current password or bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  changePassword(
+    @Req() request: AuthenticatedRequest,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(request.user.sub, dto);
   }
 }

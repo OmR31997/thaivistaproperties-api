@@ -37,6 +37,13 @@ export class UserRepository {
       .exec();
   }
 
+  async updatePasswordHash(
+    userId: string | UserDocument['_id'],
+    passwordHash: string,
+  ): Promise<void> {
+    await this.userModel.updateOne({ _id: userId }, { passwordHash }).exec();
+  }
+
   async create(data: Partial<User>): Promise<UserDocument> {
     return this.userModel.create(data);
   }

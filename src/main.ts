@@ -1,10 +1,24 @@
 import { NestFactory } from '@nestjs/core';
-import { RequestMethod, ValidationPipe } from '@nestjs/common';
+import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import * as os from 'node:os';
 import { AppModule, ObserveInstrument } from '@app/app.module';
 
+function getNetworkIp(): string {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name] ?? []) {
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+}
+
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
   });
@@ -44,13 +58,23 @@ async function bootstrap() {
       'bearer',
     )
     .build();
-  SwaggerModule.setup(
-    'docs',
-    app,
-    SwaggerModule.createDocument(app, swaggerConfig),
-    { useGlobalPrefix: false },
-  );
 
-  await app.listen(process.env.PORT ?? 3000);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, { useGlobalPrefix: false });
+
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port, '0.0.0.0');
+
+  const networkIp = getNetworkIp();
+  const remoteUrl = process.env.API_BASE_URL ?? process.env.REMOTE_URL;
+
+  logger.log(` ThaiVista API Server Started`);
+  logger.log(` Local URL:         http://localhost:${port}`);
+  logger.log(` Local Network/LAN: http://${networkIp}:${port}`);
+  if (remoteUrl) {
+    logger.log(` Remote URL:        ${remoteUrl}`);
+  }
+  logger.log(` Swagger Docs:      http://localhost:${port}/docs`);
 }
 void bootstrap();
+

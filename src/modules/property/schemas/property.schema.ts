@@ -7,6 +7,7 @@ import {
 import {
   BATHROOM_OPTIONS,
   PROPERTY_INTENTS,
+  PROPERTY_STATUSES,
 } from '@modules/property/constants/property.constants';
 
 export type PropertyDocument = HydratedDocument<Property>;
@@ -46,6 +47,9 @@ export class Property {
   @Prop({ type: String, required: true, trim: true })
   price!: string;
 
+  @Prop({ type: String, enum: PROPERTY_STATUSES, default: 'published', index: true })
+  status!: (typeof PROPERTY_STATUSES)[number];
+
   @Prop({ type: String, trim: true, maxlength: 2000, default: '' })
   message!: string;
 
@@ -57,3 +61,4 @@ export const PropertySchema = SchemaFactory.createForClass(Property);
 
 PropertySchema.index({ createdAt: -1 });
 PropertySchema.index({ intent: 1, propertyType: 1 });
+PropertySchema.index({ status: 1 });
