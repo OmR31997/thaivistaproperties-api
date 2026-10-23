@@ -1,5 +1,5 @@
 import { BedroomOption, PropertyType } from "@modules/property-inquiry/types/property-inquiry.types";
-import { BathroomOption, PropertyIntent } from "../constants/property.constants";
+import { BathroomOption, PropertyIntent, PropertyStatus } from "../constants/property.constants";
 
 export class Property {
   name!: string;
@@ -23,6 +23,8 @@ export class Property {
   sizeSQM?: number;
 
   price!: number;
+
+  status?: PropertyStatus;
 
   message?: string;
 

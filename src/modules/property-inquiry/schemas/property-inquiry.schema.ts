@@ -47,23 +47,23 @@ export const PropertyInquiryContactSchema =
 
 @Schema({ timestamps: true, versionKey: false, collection: 'property-inquiries' })
 export class PropertyInquiry {
-  @Prop({ type: String, enum: PROPERTY_INQUIRY_INTENT, required: true, index: true })
+  @Prop({ type: String, enum: PROPERTY_INQUIRY_INTENT, default: 'contact', required: true, index: true })
   intent!: (typeof PROPERTY_INQUIRY_INTENT)[number];
 
-  @Prop({ type: String, enum: PROPERTY_TYPES, required: true })
-  propertyType!: (typeof PROPERTY_TYPES)[number];
+  @Prop({ type: String, enum: PROPERTY_TYPES, default: null })
+  propertyType?: (typeof PROPERTY_TYPES)[number] | null;
 
-  @Prop({ type: String, enum: PREFERRED_AREAS, required: true })
-  preferredArea!: (typeof PREFERRED_AREAS)[number];
+  @Prop({ type: String, enum: PREFERRED_AREAS, default: null })
+  preferredArea?: (typeof PREFERRED_AREAS)[number] | null;
 
-  @Prop({ type: String, enum: PROPERTY_BUDGETS, required: true })
-  budget!: (typeof PROPERTY_BUDGETS)[number];
+  @Prop({ type: String, enum: PROPERTY_BUDGETS, default: null })
+  budget?: (typeof PROPERTY_BUDGETS)[number] | null;
 
   @Prop({ type: String, enum: BEDROOM_OPTIONS, default: null })
   bedrooms?: (typeof BEDROOM_OPTIONS)[number] | null;
 
-  @Prop({ type: String, enum: INQUIRY_TIMELINES, required: true })
-  timeline!: (typeof INQUIRY_TIMELINES)[number];
+  @Prop({ type: String, enum: INQUIRY_TIMELINES, default: null })
+  timeline?: (typeof INQUIRY_TIMELINES)[number] | null;
 
   @Prop({ type: PropertyInquiryContactSchema, required: true })
   contact!: PropertyInquiryContact;
@@ -71,7 +71,7 @@ export class PropertyInquiry {
   @Prop({ type: String, trim: true, maxlength: 2000, default: '' })
   message!: string;
 
-  @Prop({ type: String, enum: PROPERTY_INQUIRY_STATUSES, default: 'new', index: true })
+  @Prop({ type: String, enum: PROPERTY_INQUIRY_STATUSES, default: 'pending', index: true })
   status!: (typeof PROPERTY_INQUIRY_STATUSES)[number];
 }
 

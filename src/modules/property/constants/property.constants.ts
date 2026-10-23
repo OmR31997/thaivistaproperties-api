@@ -1,6 +1,6 @@
 export const PROPERTY_INTENTS = ['sell', 'rentOut'] as const;
 
-export const PROPERTY_STATUSES = ['published', 'draft', 'archived'] as const;
+export const PROPERTY_STATUSES = ['published', 'pending'] as const;
 
 export const BATHROOM_OPTIONS = [
   '1',

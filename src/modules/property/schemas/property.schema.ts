@@ -47,7 +47,7 @@ export class Property {
   @Prop({ type: String, required: true, trim: true })
   price!: string;
 
-  @Prop({ type: String, enum: PROPERTY_STATUSES, default: 'published', index: true })
+  @Prop({ type: String, enum: PROPERTY_STATUSES, default: 'pending', index: true })
   status!: (typeof PROPERTY_STATUSES)[number];
 
   @Prop({ type: String, trim: true, maxlength: 2000, default: '' })

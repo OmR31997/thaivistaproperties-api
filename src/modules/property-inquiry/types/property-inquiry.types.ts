@@ -38,13 +38,14 @@ export interface PropertyInquiryContact {
 }
 
 export interface CreatePropertyInquiryInput {
-  intent: PropertyInquiryIntent;
-  propertyType: PropertyType;
-  preferredArea: PreferredArea;
-  budget: PropertyBudget;
+  intent?: PropertyInquiryIntent;
+  propertyType?: PropertyType | null;
+  preferredArea?: PreferredArea | null;
+  budget?: PropertyBudget | null;
   bedrooms?: BedroomOption | null;
-  timeline: InquiryTimeline;
+  timeline?: InquiryTimeline | null;
   contact: PropertyInquiryContact;
+  status?: PropertyInquiryStatus;
   message?: string;
 }
 

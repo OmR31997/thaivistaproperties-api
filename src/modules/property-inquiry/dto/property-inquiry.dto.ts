@@ -74,35 +74,45 @@ function HasContactMethod(): PropertyDecorator {
 HasContactMethod()(PropertyInquiryContactDto.prototype, 'email');
 
 export class CreatePropertyInquiryDto {
-  @ApiProperty({ enum: PROPERTY_INQUIRY_INTENT })
+  @ApiPropertyOptional({ enum: PROPERTY_INQUIRY_INTENT, default: 'contact' })
+  @IsOptional()
   @IsIn(PROPERTY_INQUIRY_INTENT)
-  intent!: (typeof PROPERTY_INQUIRY_INTENT)[number];
+  intent?: (typeof PROPERTY_INQUIRY_INTENT)[number];
 
-  @ApiProperty({ enum: PROPERTY_TYPES })
+  @ApiPropertyOptional({ enum: PROPERTY_TYPES, nullable: true })
+  @IsOptional()
   @IsIn(PROPERTY_TYPES)
-  propertyType!: (typeof PROPERTY_TYPES)[number];
+  propertyType?: (typeof PROPERTY_TYPES)[number] | null;
 
-  @ApiProperty({ enum: PREFERRED_AREAS })
+  @ApiPropertyOptional({ enum: PREFERRED_AREAS, nullable: true })
+  @IsOptional()
   @IsIn(PREFERRED_AREAS)
-  preferredArea!: (typeof PREFERRED_AREAS)[number];
+  preferredArea?: (typeof PREFERRED_AREAS)[number] | null;
 
-  @ApiProperty({ enum: PROPERTY_BUDGETS })
+  @ApiPropertyOptional({ enum: PROPERTY_BUDGETS, nullable: true })
+  @IsOptional()
   @IsIn(PROPERTY_BUDGETS)
-  budget!: (typeof PROPERTY_BUDGETS)[number];
+  budget?: (typeof PROPERTY_BUDGETS)[number] | null;
 
   @ApiPropertyOptional({ enum: BEDROOM_OPTIONS, nullable: true })
   @IsOptional()
   @IsIn(BEDROOM_OPTIONS)
   bedrooms?: (typeof BEDROOM_OPTIONS)[number] | null;
 
-  @ApiProperty({ enum: INQUIRY_TIMELINES })
+  @ApiPropertyOptional({ enum: INQUIRY_TIMELINES, nullable: true })
+  @IsOptional()
   @IsIn(INQUIRY_TIMELINES)
-  timeline!: (typeof INQUIRY_TIMELINES)[number];
+  timeline?: (typeof INQUIRY_TIMELINES)[number] | null;
 
   @ApiProperty({ type: PropertyInquiryContactDto })
   @ValidateNested()
   @Type(() => PropertyInquiryContactDto)
   contact!: PropertyInquiryContactDto;
+
+  @ApiPropertyOptional({ enum: PROPERTY_INQUIRY_STATUSES, default: 'pending' })
+  @IsOptional()
+  @IsIn(PROPERTY_INQUIRY_STATUSES)
+  status?: (typeof PROPERTY_INQUIRY_STATUSES)[number];
 
   @ApiPropertyOptional({ maxLength: 2000 })
   @IsOptional()
@@ -111,12 +121,7 @@ export class CreatePropertyInquiryDto {
   message?: string;
 }
 
-export class UpdatePropertyInquiryDto extends PartialType(CreatePropertyInquiryDto) {
-  @ApiPropertyOptional({ enum: PROPERTY_INQUIRY_STATUSES })
-  @IsOptional()
-  @IsIn(PROPERTY_INQUIRY_STATUSES)
-  status?: (typeof PROPERTY_INQUIRY_STATUSES)[number];
-}
+export class UpdatePropertyInquiryDto extends PartialType(CreatePropertyInquiryDto) {}
 
 export class PropertyInquiryQueryDto extends BaseQueryDto {
   @ApiPropertyOptional({ enum: PROPERTY_INQUIRY_INTENT })

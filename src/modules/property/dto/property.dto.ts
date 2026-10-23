@@ -80,7 +80,7 @@ export class CreatePropertyDto {
   @IsNotEmpty()
   price!: string;
 
-  @ApiPropertyOptional({ enum: PROPERTY_STATUSES, default: 'published' })
+  @ApiPropertyOptional({ enum: PROPERTY_STATUSES, default: 'pending' })
   @IsOptional()
   @IsIn(PROPERTY_STATUSES)
   status?: (typeof PROPERTY_STATUSES)[number];

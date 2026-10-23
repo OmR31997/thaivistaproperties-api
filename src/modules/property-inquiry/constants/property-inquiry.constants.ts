@@ -1,5 +1,6 @@
 
 export const PROPERTY_INQUIRY_INTENT = [
+  "contact",
   "buy",
   "rent",
   "invest",
@@ -49,6 +50,8 @@ export const INQUIRY_TIMELINES = [
 ] as const;
 
 export const PROPERTY_INQUIRY_STATUSES = [
+  "pending",
+  "resolved",
   "new",
   "contacted",
   "qualified",

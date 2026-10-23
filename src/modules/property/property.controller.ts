@@ -29,7 +29,7 @@ import { PropertyService } from '@modules/property/property.service';
 @ApiExtraModels(PaginatedPropertyResponseDto)
 @Controller('properties')
 export class PropertyController {
-  constructor(private readonly service: PropertyService) {}
+  constructor(private readonly service: PropertyService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a property' })
@@ -44,7 +44,7 @@ export class PropertyController {
 
   @Get()
   @UseInterceptors(PaginationInterceptor)
-  @ApiOperation({ summary: 'List properties with search and filters' })
+  @ApiOperation({ summary: 'List property with search and filters' })
   @ApiResponse({
     status: 200,
     description: 'Paginated properties',
